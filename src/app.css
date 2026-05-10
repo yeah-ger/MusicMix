@@ -1,0 +1,216 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #0a0a0f;
+  --surface: rgba(15, 15, 25, 0.85);
+  --text: #e2e8f0;
+  --text-muted: #94a3b8;
+  --primary: #6366f1;
+  --primary-hover: #818cf8;
+  --danger: #ef4444;
+  --border: rgba(255, 255, 255, 0.08);
+  --radius: 12px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+  height: 100dvh;
+}
+
+#root { height: 100%; }
+
+/* App Layout */
+.app { position: relative; width: 100%; height: 100%; }
+
+.app__canvas {
+  position: absolute; inset: 0; z-index: 0;
+  background: radial-gradient(ellipse at center, #0f0f1a 0%, #050508 100%);
+}
+
+.app__ui {
+  position: absolute; inset: 0; z-index: 1;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+.app__ui > * { pointer-events: auto; }
+
+/* Void View */
+.void-view {
+  text-align: center;
+  animation: fadeIn 1s ease;
+}
+
+.void-view__title {
+  font-size: 3rem; font-weight: 200; letter-spacing: 0.1em;
+  background: linear-gradient(135deg, #6366f1, #a78bfa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.void-view__subtitle {
+  color: var(--text-muted); font-size: 1.1rem; margin-bottom: 2rem;
+}
+
+.void-view__input {
+  display: flex; gap: 8px; max-width: 400px; margin: 0 auto;
+}
+
+.void-view__field {
+  flex: 1; padding: 12px 16px; border-radius: var(--radius);
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); font-size: 1rem; outline: none;
+  transition: border-color 0.2s;
+}
+
+.void-view__field:focus { border-color: var(--primary); }
+.void-view__field::placeholder { color: var(--text-muted); }
+
+/* Emerging View */
+.emerging-view {
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+}
+
+.emerging-view__pulse {
+  width: 80px; height: 80px; border-radius: 50%;
+  background: radial-gradient(circle, var(--primary), transparent 70%);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.emerging-view__text {
+  color: var(--text-muted); font-size: 1rem;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1.2); opacity: 1; }
+}
+
+/* Emerged View */
+.emerged-view {
+  display: flex; flex-direction: column; width: 100%; height: 100%;
+  justify-content: space-between; padding: 1.5rem;
+}
+
+.emerged-view__top {
+  display: flex; justify-content: flex-end;
+}
+
+.emerged-view__bottom {
+  display: flex; flex-direction: column; align-items: center; gap: 1rem;
+  background: var(--surface); backdrop-filter: blur(12px);
+  border-radius: var(--radius); padding: 1.5rem;
+  border: 1px solid var(--border); max-width: 500px;
+  margin: 0 auto; width: 100%;
+}
+
+/* Control Bar */
+.control-bar {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+}
+
+.control-bar__volume {
+  flex: 1; height: 4px; -webkit-appearance: none; appearance: none;
+  background: var(--border); border-radius: 2px; outline: none;
+}
+
+.control-bar__volume::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px;
+  border-radius: 50%; background: var(--primary); cursor: pointer;
+}
+
+.control-bar__volume-label {
+  font-size: 0.75rem; color: var(--text-muted); min-width: 36px;
+}
+
+/* Buttons */
+.btn {
+  padding: 8px 16px; border: none; border-radius: 8px;
+  font-size: 0.875rem; cursor: pointer; transition: all 0.2s;
+}
+
+.btn--primary { background: var(--primary); color: #fff; }
+.btn--primary:hover { background: var(--primary-hover); }
+.btn--primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn--ghost { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+.btn--ghost:hover { background: rgba(255,255,255,0.1); }
+.btn--ghost:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.btn--icon {
+  width: 36px; height: 36px; padding: 0; display: flex;
+  align-items: center; justify-content: center; font-size: 1.2rem;
+  background: rgba(255,255,255,0.05); color: var(--text); border-radius: 50%;
+}
+.btn--icon:hover { background: rgba(255,255,255,0.1); }
+
+.btn--danger { background: transparent; color: var(--text-muted); border: 1px solid var(--border); }
+.btn--danger:hover { border-color: var(--danger); color: var(--danger); }
+.btn--confirming { background: var(--danger); color: #fff; border-color: var(--danger); }
+
+/* Mode Switch */
+.mode-switch {
+  display: inline-flex; background: rgba(255,255,255,0.05);
+  border-radius: 8px; padding: 3px;
+}
+
+.mode-switch__tab {
+  padding: 6px 16px; border: none; background: transparent;
+  font-size: 0.8rem; cursor: pointer; color: var(--text-muted);
+  border-radius: 6px; transition: all 0.2s;
+}
+
+.mode-switch__tab--active {
+  background: var(--primary); color: #fff;
+}
+
+/* Text Input */
+.text-input { width: 100%; }
+
+.text-input__textarea {
+  width: 100%; padding: 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.03);
+  color: var(--text); font-size: 0.9rem; resize: none;
+  font-family: inherit; outline: none;
+}
+
+.text-input__textarea:focus { border-color: var(--primary); }
+.text-input__textarea::placeholder { color: var(--text-muted); }
+
+.text-input__footer {
+  display: flex; justify-content: space-between; align-items: center; margin-top: 8px;
+}
+
+.text-input__count { font-size: 0.75rem; color: var(--text-muted); }
+.text-input__count--over { color: var(--danger); }
+
+/* Drawing Canvas */
+.drawing-canvas { width: 100%; }
+
+.drawing-canvas__canvas {
+  width: 100%; height: 200px; border: 1px solid var(--border);
+  border-radius: 8px; touch-action: none; cursor: crosshair;
+  background: rgba(255,255,255,0.02);
+}
+
+.drawing-canvas__footer {
+  display: flex; align-items: center; gap: 8px; margin-top: 8px;
+}
+
+.drawing-canvas__count { font-size: 0.75rem; color: var(--text-muted); flex: 1; }
+
+/* Emotion Input */
+.emotion-input { width: 100%; }
+
+.emotion-input__panel { animation: fadeIn 0.25s ease-out; margin-top: 12px; }
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
