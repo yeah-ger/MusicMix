@@ -1,5 +1,13 @@
-import * as Tone from 'tone';
+import type * as ToneNs from 'tone';
 import type { EmotionVector, SpectrumData } from '../../types';
+
+type ToneLib = typeof ToneNs;
+let _tone: ToneLib | null = null;
+const loadTone = async (): Promise<ToneLib> => {
+  if (!_tone) _tone = await import('tone');
+  return _tone;
+};
+const T = (): ToneLib => _tone!;
 
 type MusicStyle = 'ambient' | 'classical' | 'electronic' | 'jazz' | 'pop';
 
@@ -26,9 +34,9 @@ const SCALES: Record<string, number[]> = {
 };
 
 export class MusicEngine {
-  private synth: Tone.PolySynth | null = null;
-  private padSynth: Tone.PolySynth | null = null;
-  private analyser: Tone.Analyser | null = null;
+  private synth: ToneNs.PolySynth | null = null;
+  private padSynth: ToneNs.PolySynth | null = null;
+  private analyser: ToneNs.Analyser | null = null;
   private loopId: number | null = null;
   private spectrumCb: ((data: SpectrumData) => void) | null = null;
   private params: MusicParams = { bpm: 90, key: 'C', style: 'ambient', volume: 0.8 };
@@ -37,6 +45,7 @@ export class MusicEngine {
   private lastPitch = 60;
 
   async start(emotion: EmotionVector): Promise<void> {
+    const Tone = await loadTone();
     await Tone.start();
     this.params = emotionToMusicParams(emotion);
 
@@ -67,24 +76,24 @@ export class MusicEngine {
 
   updateEmotion(emotion: EmotionVector): void {
     this.params = emotionToMusicParams(emotion);
-    Tone.getTransport().bpm.value = this.params.bpm;
+    T().getTransport().bpm.value = this.params.bpm;
   }
 
   pause(): void {
-    Tone.getTransport().pause();
+    T().getTransport().pause();
     this._isPlaying = false;
     this.stopSpectrumLoop();
   }
 
   resume(): void {
-    Tone.getTransport().start();
+    T().getTransport().start();
     this._isPlaying = true;
     this.startSpectrumLoop();
   }
 
   stop(): void {
-    Tone.getTransport().stop();
-    Tone.getTransport().cancel();
+    T().getTransport().stop();
+    T().getTransport().cancel();
     this._isPlaying = false;
     this.stopSpectrumLoop();
     this.scheduledUntil = 0;
@@ -92,8 +101,8 @@ export class MusicEngine {
 
   setVolume(v: number): void {
     this.params.volume = Math.max(0, Math.min(1, v));
-    if (this.synth) this.synth.volume.value = Tone.gainToDb(this.params.volume);
-    if (this.padSynth) this.padSynth.volume.value = Tone.gainToDb(this.params.volume * 0.5);
+    if (this.synth) this.synth.volume.value = T().gainToDb(this.params.volume);
+    if (this.padSynth) this.padSynth.volume.value = T().gainToDb(this.params.volume * 0.5);
   }
 
   onSpectrum(cb: (data: SpectrumData) => void): void { this.spectrumCb = cb; }
@@ -110,6 +119,7 @@ export class MusicEngine {
   }
 
   private scheduleMusic(): void {
+    const Tone = T();
     const beatDur = 60 / this.params.bpm;
     const isMinor = this.params.key.includes('m');
     const scale = isMinor ? SCALES.minor : (this.params.style === 'ambient' ? SCALES.pentatonic : SCALES.major);
@@ -180,7 +190,7 @@ export class MusicEngine {
       low = Math.min(1, (low / third) * 5);
       mid = Math.min(1, (mid / third) * 5);
       high = Math.min(1, (high / third) * 8);
-      const beatPhase = (Tone.getTransport().seconds % (60 / this.params.bpm)) / (60 / this.params.bpm);
+      const beatPhase = (T().getTransport().seconds % (60 / this.params.bpm)) / (60 / this.params.bpm);
       this.spectrumCb({ low, mid, high, beatPhase });
     }, 50);
   }

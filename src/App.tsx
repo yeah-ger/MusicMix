@@ -1,11 +1,11 @@
-import { useRef, useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { useRef, useEffect, useState, lazy, Suspense } from 'react';
 import { useAppStore } from './stores/appStore';
 import { useSessionStore } from './stores/sessionStore';
-import { VisualizerScene } from './visual/ParticleSystem';
 import { EmotionInput } from './input/EmotionInput';
 import { MusicEngine } from './core/music/MusicEngine';
 import './app.css';
+
+const VisualizerCanvas = lazy(() => import('./visual/VisualizerCanvas'));
 
 function ControlBar() {
   const playbackState = useSessionStore((s) => s.playbackState);
@@ -145,9 +145,9 @@ export default function App() {
   return (
     <div className="app">
       <div className="app__canvas">
-        <Canvas camera={{ position: [0, 0, 8], fov: 60 }} gl={{ antialias: true, alpha: true }}>
-          <VisualizerScene />
-        </Canvas>
+        <Suspense fallback={null}>
+          <VisualizerCanvas />
+        </Suspense>
       </div>
       <div className={`app__ui app__ui--${phase}`}>
         {phase === 'void' && <VoidView />}

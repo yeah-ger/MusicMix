@@ -34,12 +34,14 @@ export const useSessionStore = create<SessionState>((set, get) => ({
   spectrum: EMPTY_SPECTRUM,
 
   submitText: (text: string) => {
+    if (!text.trim()) return;
     const result = analyzeText(text);
     const world = emotionToWorld(result.emotion);
     set({ emotionVector: result.emotion, worldState: world, playbackState: 'playing' });
   },
 
   submitDrawing: (strokes: DrawingPoint[][]) => {
+    if (strokes.length === 0) return;
     const emotion = analyzeDrawing(strokes);
     const world = emotionToWorld(emotion);
     set({ emotionVector: emotion, worldState: world, playbackState: 'playing' });
